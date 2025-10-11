@@ -11,30 +11,39 @@ document.addEventListener('DOMContentLoaded', () => {
 	async function load() {
 		status.textContent = 'Loading weather for Troy, NY...';
 		try {
-			const resp = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Troy,US&units=imperial&appid=${encodeURIComponent(API_KEY)}`);
-			if (!resp.ok) {
-				const body = await resp.json().catch(() => ({}));
-				throw new Error(body.message || `HTTP ${resp.status}`);
-			}
-			const data = await resp.json();
-			loc.textContent = `${data.name}, ${data.sys && data.sys.country}`;
-			temp.textContent = data.main && Math.round(data.main.temp) + '°F';
-			cond.textContent = data.weather && data.weather[0] && capitalize(data.weather[0].description);
+			const resp = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Troy,US&units=imperial&appid=${API_KEY}`);
 
-			if (data.weather && data.weather[0] && data.weather[0].icon) {
-				const iconCode = data.weather[0].icon;
-				icon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-				icon.style.display = '';
-			}
+			if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+			const data = await resp.json();
+
+			loc.textContent = `${data.name}, ${data.sys.country}`;
+			temp.textContent = `${Math.round(data.main.temp)}°F`;
+			cond.textContent = capitalize(data.weather[0].description);
+
+			// Add new info dynamically
+			const extraInfo = document.createElement("div");
+			extraInfo.innerHTML = `
+            <p><strong>Feels like:</strong> ${Math.round(data.main.feels_like)}°F</p>
+            <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+            <p><strong>Wind:</strong> ${Math.round(data.wind.speed)} mph</p>
+            <p><strong>Pressure:</strong> ${data.main.pressure} hPa</p>
+            <p><strong>Clouds:</strong> ${data.clouds.all}%</p>
+        `;
+			document.querySelector(".card-body").appendChild(extraInfo);
+
+			// Display icon
+			const iconCode = data.weather[0].icon;
+			icon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+			icon.style.display = '';
 
 			status.textContent = '';
 		} catch (err) {
 			status.textContent = 'Error: ' + err.message;
-			icon.style.display = 'none';
-			temp.textContent = '--°F';
-			cond.textContent = '--';
 		}
+
 	}
+
 
 	function capitalize(s) {
 		if (!s) return s;

@@ -1,0 +1,70 @@
+html, body { 
+    height: 100%; 
+    margin: 0; 
+    font-family: Arial, Helvetica, sans-serif; 
+    background: #f6f9fc; 
+}
+/* Top light-blue bar (similar to weather page) */
+#news {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  line-height: 56px;
+  background: #1e88e5;
+  color: #fff;
+  text-align: center;
+  padding: 0 10px;
+  font-weight: 600;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+/* News list sits below the top bar and spans wider than the weather card */
+main#news-list { 
+    max-width: 1100px; 
+    margin: 72px auto 24px; 
+    padding: 12px; 
+    display: grid; 
+    gap: 12px; 
+    box-sizing: border-box; }
+
+.article {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(20,30,60,0.06);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.article img { 
+    width: 120px; 
+    height: 80px; 
+    object-fit: cover; 
+    border-radius: 6px; 
+}
+.article .meta { 
+    flex: 1; 
+}
+.article h3 { 
+    margin: 0 0 6px; 
+    font-size: 16px; 
+}
+.article p { 
+    margin: 0 0 6px; 
+    color: #444; 
+    font-size: 14px; 
+}
+.article a.read { 
+    color: #1e88e5; 
+    text-decoration: none; 
+    font-weight: 600; 
+}
+
+
+.status { 
+    text-align: center; 
+    color: #666; 
+}
