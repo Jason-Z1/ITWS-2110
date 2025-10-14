@@ -159,10 +159,10 @@ function getNews() {
     });
 }
 
-$(function() {
+document.addEventListener('DOMContentLoaded', function() {
   // Kick off the page
   if (!OPENWEATHER_KEY || !THENEWSAPI_KEY) {
-    console.warn("Add your API keys in app.js to fetch live data.");
+    console.warn("Add your API keys in index.js to fetch live data.");
   }
   getCurrentWeather();
   getForecast();
