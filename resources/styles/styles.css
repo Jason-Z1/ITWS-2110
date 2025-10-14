@@ -1,0 +1,45 @@
+body {
+  background: #f7f9fc;
+}
+
+.weather-icon {
+  width: 72px;
+  height: 72px;
+}
+
+.weather-icon-sm {
+  width: 56px;
+  height: 56px;
+}
+
+.mini-box {
+  background: #f0f6ff;
+  border-radius: 0.75rem;
+}
+
+.mini-title {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.mini-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.forecast-card .card-body {
+  padding: 0.75rem;
+}
+
+.news-img {
+  object-fit: cover;
+  height: 160px;
+}
+
+/* A tiny responsive helper so 5 cards can look decent on md screens */
+@media (min-width: 768px) {
+  .col-md-2-5 {
+    flex: 0 0 auto;
+    width: 20%;
+  }
+}
