@@ -1,58 +1,82 @@
-// ===== ADD YOUR API KEYS HERE =====
-const OPENWEATHER_API_KEY = '673f8101da2d70f1b6a996bd4212c898';
-const THENEWSAPI_KEY = '0EN8qctLqdAHTWbtBzuObVXziQLEN9NsEiHMwnsh';
+const openWeatherApiKey = "673f8101da2d70f1b6a996bd4212c898";
+const newsApiKey = "0EN8qctLqdAHTWbtBzuObVXziQLEN9NsEiHMwnsh";
 
-// ========== Weather Logic ==========
-document.getElementById('weather-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const city = document.getElementById('city-input').value.trim();
-    if (!city) return;
+const weatherDataDiv = document.getElementById("weatherData");
+const newsDataDiv = document.getElementById("newsData");
+const form = document.getElementById("locationForm");
+const cityInput = document.getElementById("cityInput");
 
-    const weatherRes = document.getElementById('weather-result');
-    weatherRes.innerHTML = `<div class="text-muted">Loading...</div>`;
+// Fetch weather data from OpenWeather
+async function fetchWeather(location) {
+  try {
+    let url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&appid=${openWeatherApiKey}&units=metric`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("City not found");
 
-    try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${OPENWEATHER_API_KEY}`;
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error('City not found.');
-        const data = await resp.json();
-        weatherRes.innerHTML = `
-            <h5>${data.name}, ${data.sys.country}</h5>
-            <div><strong>${data.weather[0].description}</strong></div>
-            <div>🌡️ Temp: ${Math.round(data.main.temp)}&deg;C (feels like ${Math.round(data.main.feels_like)}&deg;C)</div>
-            <div>💧 Humidity: ${data.main.humidity}%</div>
-            <div>💨 Wind: ${data.wind.speed} m/s</div>
-        `;
-    } catch (err) {
-        weatherRes.innerHTML = `<div class="text-danger">${err.message}</div>`;
-    }
+    const data = await response.json();
+    displayWeather(data);
+  } catch (error) {
+    weatherDataDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+  }
+}
+
+// Display weather data on the page
+function displayWeather(data) {
+  const iconUrl = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+
+  weatherDataDiv.innerHTML = `
+    <div class="d-flex align-items-center mb-3">
+      <img src="${iconUrl}" alt="${data.weather[0].description}" class="weather-icon" />
+      <div class="ms-3">
+        <h2>${data.name}, ${data.sys.country}</h2>
+        <p class="mb-0">${data.weather[0].description}</p>
+        <h3>${data.main.temp.toFixed(1)} °C</h3>
+      </div>
+    </div>
+    <p>Feels like: ${data.main.feels_like.toFixed(1)} °C</p>
+    <p>Humidity: ${data.main.humidity}%</p>
+    <p>Wind Speed: ${data.wind.speed} m/s</p>
+  `;
+}
+
+// Fetch news from TheNewsAPI
+async function fetchNews() {
+  try {
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=general&pageSize=5&apiKey=${newsApiKey}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Failed to load news");
+
+    const data = await response.json();
+    displayNews(data.articles);
+  } catch (error) {
+    newsDataDiv.innerHTML = `<p class="text-danger">${error.message}</p>`;
+  }
+}
+
+// Display news articles on the page
+function displayNews(articles) {
+  newsDataDiv.innerHTML = "";
+  articles.forEach(article => {
+    const articleEl = document.createElement("div");
+    articleEl.classList.add("news-article");
+
+    articleEl.innerHTML = `
+      <a href="${article.url}" target="_blank" class="news-title">${article.title}</a>
+      <p class="news-description">${article.description || ""}</p>
+    `;
+
+    newsDataDiv.appendChild(articleEl);
+  });
+}
+
+// Form submission handler
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const location = cityInput.value.trim();
+  if (location) {
+    fetchWeather(location);
+  }
 });
 
-// ========== News Logic ==========
-async function loadNews() {
-    const newsContainer = document.getElementById('news-list');
-    newsContainer.innerHTML = `<div class="text-muted">Loading news...</div>`;
-    try {
-        const url = `https://api.thenewsapi.com/v1/news/top?api_token=${THENEWSAPI_KEY}&locale=us&language=en&limit=5`;
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error('Failed to fetch news.');
-        const data = await resp.json();
-        if (data.data && data.data.length) {
-            newsContainer.innerHTML = data.data.map(article =>
-                `<div class="headline d-flex align-items-start">
-                    <img src="${article.image_url || ''}" alt="" width="80" onerror="this.style.display='none'">
-                    <div>
-                        <a href="${article.url}" target="_blank"><strong>${article.title}</strong></a>
-                        <div class="text-muted mb-1" style="font-size:0.95em;">${article.source} - ${new Date(article.published_at).toLocaleString()}</div>
-                        <div>${article.description || article.snippet || ''}</div>
-                    </div>
-                </div>`
-            ).join('');
-        } else {
-            newsContainer.innerHTML = `<div class="text-warning">No news found.</div>`;
-        }
-    } catch (err) {
-        newsContainer.innerHTML = `<div class="text-danger">${err.message}</div>`;
-    }
-}
-loadNews();
+// Initial load: fetch news immediately
+fetchNews();

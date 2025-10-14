@@ -1,38 +1,53 @@
 body {
-    background-color: #f8f9fa;
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.card {
-    border-radius: 1rem;
+.weather-app {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
 }
 
-#weather-result {
-    font-size: 1.1rem;
+.news-section {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  color: #eee;
 }
 
-#news-list {
-    min-height: 200px;
+h1, h3 {
+  text-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 
-.headline {
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid #e2e3e5;
+#weatherData {
+  font-size: 1.2rem;
 }
 
-.headline:last-child {
-    border-bottom: none;
+.weather-icon {
+  width: 80px;
+  height: 80px;
 }
 
-.headline img {
-    max-width: 80px;
-    height: auto;
-    margin-right: 16px;
-    border-radius: 4px;
+.news-article {
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 0;
 }
 
-@media (max-width: 600px) {
-    .headline img {
-        display: none;
-    }
+.news-article:last-child {
+  border-bottom: none;
+}
+
+.news-title {
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+}
+
+.news-title:hover {
+  text-decoration: underline;
+}
+
+.news-description {
+  font-size: 0.9rem;
+  color: #ccc;
 }
