@@ -7,16 +7,15 @@ const newsDataDiv = document.getElementById("newsData");
 const form = document.getElementById("locationForm");
 const cityInput = document.getElementById("cityInput");
 
-// Fetch current weather data
+let globalDailyForecast = {};
+
 async function fetchWeather(location) {
   try {
-    // Get current weather
     let weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&appid=${openWeatherApiKey}&units=imperial`;
     const weatherResponse = await fetch(weatherUrl);
     if (!weatherResponse.ok) throw new Error("City not found");
     const weatherData = await weatherResponse.json();
 
-    // Get 5-day forecast
     let forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(location)}&appid=${openWeatherApiKey}&units=imperial`;
     const forecastResponse = await fetch(forecastUrl);
     if (!forecastResponse.ok) throw new Error("Forecast data not available");
@@ -29,153 +28,125 @@ async function fetchWeather(location) {
     forecastDataDiv.innerHTML = "";
   }
 }
-
-// Display current weather with detailed city info
 function displayWeather(data) {
   const iconUrl = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
   const sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString();
   const sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString();
-  const timezoneOffset = data.timezone / 3600; // Convert seconds to hours
+  const timezoneOffset = data.timezone / 3600;
 
   weatherDataDiv.innerHTML = `
     <div class="d-flex align-items-center mb-3">
       <img src="${iconUrl}" alt="${data.weather[0].description}" class="weather-icon" />
       <div class="ms-3">
         <h2>${data.name}, ${data.sys.country}</h2>
-        <p class="mb-0">${data.weather[0].description}</p>
+        <p class="mb-0 text-capitalize">${data.weather[0].description}</p>
         <h3>${data.main.temp.toFixed(1)} °F</h3>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-6">
-        <p><strong>Feels like:</strong> ${data.main.feels_like.toFixed(1)} °F</p>
-        <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
-        <p><strong>Wind Speed:</strong> ${data.wind.speed} mph</p>
-        <p><strong>Pressure:</strong> ${data.main.pressure} hPa</p>
-      </div>
-      <div class="col-md-6">
-        <p><strong>Coordinates:</strong> ${data.coord.lat.toFixed(4)}, ${data.coord.lon.toFixed(4)}</p>
-        <p><strong>Timezone:</strong> UTC${timezoneOffset >= 0 ? '+' : ''}${timezoneOffset.toFixed(1)} hours</p>
-        <p><strong>Sunrise:</strong> ${sunrise}</p>
-        <p><strong>Sunset:</strong> ${sunset}</p>
-      </div>
-    </div>
+    <p><strong>Feels like:</strong> ${data.main.feels_like.toFixed(1)} °F</p>
+    <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+    <p><strong>Wind Speed:</strong> ${data.wind.speed} mph</p>
+    <p><strong>Pressure:</strong> ${data.main.pressure} hPa</p>
+    <p><strong>Coordinates:</strong> ${data.coord.lat.toFixed(4)}, ${data.coord.lon.toFixed(4)}</p>
+    <p><strong>Timezone:</strong> UTC${timezoneOffset >= 0 ? "+" : ""}${timezoneOffset.toFixed(1)} hours</p>
+    <p><strong>Sunrise:</strong> ${sunrise}</p>
+    <p><strong>Sunset:</strong> ${sunset}</p>
   `;
 }
-
-// Group forecast data by day and display 5-day forecast
 function displayForecast(forecastList) {
-  // Group forecast data by day
-  const dailyForecast = {};
-  
+  forecastDataDiv.innerHTML = "";
+  globalDailyForecast = {};
   forecastList.forEach(item => {
-    const date = new Date(item.dt * 1000);
-    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
-    
-    if (!dailyForecast[dateStr]) {
-      dailyForecast[dateStr] = {
-        temps: [],
-        feels_like: [],
-        humidity: [],
-        wind_speed: [],
-        weather: [],
-        icon: item.weather[0].icon,
-        description: item.weather[0].description,
-        dt: item.dt
-      };
-    }
-    
-    dailyForecast[dateStr].temps.push(item.main.temp);
-    dailyForecast[dateStr].feels_like.push(item.main.feels_like);
-    dailyForecast[dateStr].humidity.push(item.main.humidity);
-    dailyForecast[dateStr].wind_speed.push(item.wind.speed);
-    dailyForecast[dateStr].weather.push(item.weather[0].main);
+    const date = new Date(item.dt * 1000).toISOString().split("T")[0];
+    if (!globalDailyForecast[date]) globalDailyForecast[date] = [];
+    globalDailyForecast[date].push(item);
   });
-  
-  // Convert to array and sort by date
-  const forecastArray = Object.keys(dailyForecast).map(dateStr => {
-    const data = dailyForecast[dateStr];
-    const temps = data.temps;
-    return {
-      date: dateStr,
-      temp_min: Math.min(...temps),
-      temp_max: Math.max(...temps),
-      feels_like: data.feels_like.reduce((a, b) => a + b, 0) / data.feels_like.length,
-      humidity: data.humidity.reduce((a, b) => a + b, 0) / data.humidity.length,
-      wind_speed: data.wind_speed.reduce((a, b) => a + b, 0) / data.wind_speed.length,
-      weather_main: data.weather[0], // Most common weather condition
-      description: data.description,
-      icon: data.icon,
-      dt: data.dt
-    };
+
+  const sortedDates = Object.keys(globalDailyForecast).sort();
+  let today = (new Date()).toISOString().split("T")[0];
+  let days = sortedDates.filter(d => d !== today).slice(0, 5);
+  if (days.length < 5) days = sortedDates.slice(0, 5);
+
+  days.forEach(dateStr => {
+    const items = globalDailyForecast[dateStr];
+    let minTemp = Math.min(...items.map(i => i.main.temp_min));
+    let maxTemp = Math.max(...items.map(i => i.main.temp_max));
+    let noonEntry = items.find(i => i.dt_txt.includes("12:00:00")) || items[0];
+    let icon = noonEntry.weather[0].icon;
+    let desc = noonEntry.weather[0].description;
+    let dt = noonEntry.dt;
+    const dateObj = new Date(dt * 1000);
+    const weekday = dateObj.toLocaleDateString(undefined, { weekday: "short" });
+    const monthDay = dateObj.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+    const card = document.createElement("div");
+    card.className = "forecast-day";
+    card.innerHTML = `
+      <div class="forecast-date">${weekday}, ${monthDay}</div>
+      <img src="https://openweathermap.org/img/wn/${icon}.png" alt="${desc}" title="${desc}" class="forecast-icon" />
+      <div class="forecast-temp">${minTemp.toFixed(0)}° / ${maxTemp.toFixed(0)}°</div>
+      <div class="forecast-desc text-capitalize">${desc}</div>
+    `;
+    card.dataset.date = dateStr;
+    card.onclick = () => showForecastModal(dateStr);
+    forecastDataDiv.appendChild(card);
   });
-  
-  forecastArray.sort((a, b) => a.dt - b.dt);
-  
-  // Get next 5 days (excluding today)
-  const nextDays = forecastArray.slice(1, 6);
-  
-  // Display forecast
-  forecastDataDiv.innerHTML = `
-    <h4 class="forecast-title">5-Day Forecast</h4>
-    <div class="forecast-grid">
-      ${nextDays.map(day => {
-        const date = new Date(day.dt * 1000);
-        const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
-        const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const iconUrl = `https://openweathermap.org/img/wn/${day.icon}@2x.png`;
-        
-        return `
-          <div class="forecast-day">
-            <div class="forecast-date">${weekday}, ${monthDay}</div>
-            <img src="${iconUrl}" alt="${day.description}" class="forecast-icon" />
-            <div class="forecast-temp">${day.temp_min.toFixed(0)}°/${day.temp_max.toFixed(0)}°</div>
-            <div class="forecast-desc">${day.description}</div>
+}
+function showForecastModal(dateStr) {
+  const items = globalDailyForecast[dateStr];
+  if (!items) return;
+  const modalBody = document.getElementById("forecastModalBody");
+  modalBody.innerHTML = `
+    <h5>${new Date(items[0].dt * 1000).toLocaleDateString(undefined, {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    })}</h5>
+    <div class="row">
+      ${items.map(i => `
+        <div class="col-md-4 col-6 mb-2">
+          <div class="p-2 rounded bg-light-subtle text-dark">
+            <strong>${i.dt_txt.split(" ")[1].substring(0,5)}</strong><br>
+            <img src="<https://openweathermap.org/img/wn/${i.weather>[0].icon}.png" style="width:32px">
+            <div>${i.weather[0].description}</div>
+            <div>Temp: ${i.main.temp.toFixed(1)}°F</div>
+            <div>Feels like: ${i.main.feels_like.toFixed(1)}°F</div>
+            <div>Humidity: ${i.main.humidity}%</div>
+            <div>Wind: ${i.wind.speed} mph</div>
+            <div>Pressure: ${i.main.pressure} hPa</div>
           </div>
-        `;
-      }).join('')}
+        </div>
+      `).join("")}
     </div>
   `;
+  let modal = new bootstrap.Modal(document.getElementById('forecastModal'));
+  modal.show();
 }
-
-// Fetch news from TheNewsAPI
+// News
 async function fetchNews() {
   try {
     let url = `https://newsapi.org/v2/top-headlines?country=us&category=general&pageSize=5&apiKey=${newsApiKey}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error("Failed to load news");
-    
     const data = await response.json();
     displayNews(data.articles);
   } catch (error) {
     newsDataDiv.innerHTML = `<p class="text-danger">${error.message}</p>`;
   }
 }
-
-// Display news articles
 function displayNews(articles) {
   newsDataDiv.innerHTML = "";
   articles.forEach(article => {
     const articleEl = document.createElement("div");
     articleEl.classList.add("news-article");
-    
     articleEl.innerHTML = `
       <a href="${article.url}" target="_blank" class="news-title">${article.title}</a>
       <p class="news-description">${article.description || ""}</p>
     `;
-    
     newsDataDiv.appendChild(articleEl);
   });
 }
-
-// Form submission handler
 form.addEventListener("submit", e => {
   e.preventDefault();
   const location = cityInput.value.trim();
-  if (location) {
-    fetchWeather(location);
-  }
+  if (location) { fetchWeather(location); }
 });
-
-// Initial load: fetch news immediately
 fetchNews();

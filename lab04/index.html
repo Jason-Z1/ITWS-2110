@@ -3,37 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Weather & News App</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../resources/styles/aiStyle.css" />
+  <title>Today's Weather & News</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="../resources/styles/aiStyle.css"/>
 </head>
 <body>
-  <div class="container py-4">
-    <h1 class="text-center mb-4 text-white">Today's Weather & News</h1>
-
-    <div class="weather-app card p-4 mb-4 shadow">
-      <form id="locationForm" class="input-group mb-3">
-        <input type="text" id="cityInput" class="form-control" placeholder="Enter city or ZIP code" aria-label="City or ZIP" />
-        <button class="btn btn-primary" type="submit">Get Weather</button>
-      </form>
-
-      <div id="weatherData" class="text-white">
-        <!-- Weather info will appear here -->
-      </div>
-
-      <div id="forecastData" class="mt-4">
-        <!-- Forecast will appear here -->
-      </div>
-    </div>
-
-    <div class="news-section card p-4 shadow">
-      <h3 class="mb-3">Latest News</h3>
-      <div id="newsData">
-        <!-- News articles will appear here -->
+  <div class="hero-bg">
+    <div class="container py-4">
+      <h1 class="text-center mb-4 site-title">Today's Weather & News</h1>
+      <div class="main-wrapper mx-auto">
+        <div class="row main-section align-items-stretch mb-4">
+          <div class="col-md-6 d-flex align-items-center">
+            <div class="card weather-card p-4 w-100">
+              <form id="locationForm" class="input-group mb-3">
+                <input type="text" id="cityInput" class="form-control" placeholder="Enter city or ZIP code"/>
+                <button class="btn btn-primary" type="submit">Get Weather</button>
+              </form>
+              <div id="weatherData"></div>
+            </div>
+          </div>
+          <div class="col-md-6 d-flex align-items-center justify-content-center">
+            <div class="weather-illustration d-flex align-items-center justify-content-center">
+              <svg width="150" height="150" viewBox="0 0 150 150">
+                <circle cx="75" cy="75" r="40" fill="#ffd93b"/>
+                <g stroke="#ffd93b" stroke-width="8">
+                  <line x1="75" y1="10" x2="75" y2="40"/>
+                  <line x1="75" y1="110" x2="75" y2="140"/>
+                  <line x1="10" y1="75" x2="40" y2="75"/>
+                  <line x1="110" y1="75" x2="140" y2="75"/>
+                  <line x1="30" y1="30" x2="50" y2="50"/>
+                  <line x1="120" y1="120" x2="100" y2="100"/>
+                  <line x1="30" y1="120" x2="50" y2="100"/>
+                  <line x1="120" y1="30" x2="100" y2="50"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="card forecast-card p-3 mb-4">
+          <h4 class="forecast-title mb-3">5-Day Forecast</h4>
+          <div class="d-flex flex-row flex-nowrap overflow-auto" id="forecastData"></div>
+        </div>
+        <div class="card news-section p-3 mt-4">
+          <h3 class="mb-3">Latest News</h3>
+          <div id="newsData"></div>
+        </div>
       </div>
     </div>
   </div>
-
+  <!-- Forecast Modal -->
+  <div class="modal fade" id="forecastModal" tabindex="-1" aria-labelledby="forecastModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forecastModalLabel">Forecast Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="forecastModalBody">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../resources/scripts/aiIndex.js"></script>
 </body>
 </html>
