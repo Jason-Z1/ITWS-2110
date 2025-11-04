@@ -91,18 +91,16 @@ class Division extends Operation {
 // Then tell me if there is a way to do this without the ifs
 
   try {
-    if (isset($_POST['add']) && $_POST['add'] == 'Add') {
-      $op = new Addition($o1, $o2);
-    }
-// Put the code for Part 2 here  \/
-    else if (isset($_POST['sub']) && $_POST['sub'] == 'Subtract') {
-      $op = new Substraction($o1, $o2);
-    }
-    else if (isset($_POST['mult']) && $_POST['mult'] == 'Multiply') {
-      $op = new Multiplication($o1, $o2);
-    }
-    else if (isset($_POST['div']) && $_POST['div'] == 'Divide') {
-      $op = new Division($o1, $o2);
+    // Defining the allowed operation classes
+    $allowedClasses = ['Addition', 'Subtraction', 'Multiplication', 'Division'];
+
+    if(isset($_POST['operation'])) {
+      $operationClass = $_POST['operation'];
+
+      // Validate the class name against the list to make sure it exists
+      if(in_array($operationClass, $allowedClasses) && class_exists($operationClass)) {
+        $op = new $operationClass($o1, $o2);
+      }
     }
 
 
@@ -137,15 +135,15 @@ class Division extends Operation {
     } 
   ?>
   </pre>
-  <form method="post" action="lab6start.php">
+  <form method="post" action="lab6.php">
     <input type="text" name="op1" id="name" value="" />
     <input type="text" name="op2" id="name" value="" />
     <br/>
-    <!-- Only one of these will be set with their respective value at a time -->
-    <input type="submit" name="add" value="Add" />  
-    <input type="submit" name="sub" value="Subtract" />  
-    <input type="submit" name="mult" value="Multiply" />  
-    <input type="submit" name="div" value="Divide" />  
+    <!-- All buttons share the same name but have different values representing the class names -->
+    <button type="submit" name="operation" value="Addition">Add</button>
+    <button type="submit" name="operation" value="Substraction">Subtract</button>
+    <button type="submit" name="operation" value="Multiplication">Multiply</button>
+    <button type="submit" name="operation" value="Division">Divide</button>
   </form>
 </body>
 </html>
