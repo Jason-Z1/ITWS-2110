@@ -11,7 +11,7 @@ In this lab, we develop a very basic calculator using PHP. The markup was provid
 - The *operate()* methods are implemented by subclasses to perform the actual calculation.
 - The *getEquation()* methods are also implemented by subclasses to return a formatted string representing the equation that they correspond to
 
-*** Flow of Execution: ***
+## Flow of Execution: ##
 
 1. User Input: The user enters two numbers in the text fields and clicks one of the operation buttons (Add, Subtract, Multiply, or Divide)
 
