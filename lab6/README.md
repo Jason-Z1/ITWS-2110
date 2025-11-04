@@ -23,7 +23,7 @@ In this lab, we develop a very basic calculator using PHP. The markup was provid
 
 5. Object Construction: The appropriate subclass constructor is called, the parent constructor validates numeric operands, and checks if the validation succeeds or fails. The operands are stored in member variables.
 
-6. Result display: The code checks if *$op* is set (meaning an operation object was created). It calls **$op->getEquation()** and the result is echoed inside of the **<pre id="result">** element.
+6. Result display: The code checks if *$op* is set (meaning an operation object was created). It calls **$op->getEquation()** and the result is echoed inside of the **`<pre id="result">`** element.
 
 7. Error handling: Any exceptions caught are added to the *$err* array and errors are displayed in the pre element after the result.
 
