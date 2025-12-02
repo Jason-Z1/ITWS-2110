@@ -14,6 +14,9 @@ This is a simple single-page app that shows current weather for Troy, NY and a g
  - Implement a clickable feature to the 5 day forecast cards so that "day details" pop up after clicking on the card. Make it like an extension off the site and add an option at the top right to click out of the pop-up screen.
  - Can you rewrite the 3 files so that this is implemented?
 
+# Features
 
+ - You have the option to search up any City or State and retrieve the next 5 day forecast for that area.
+ - Information such as, wind speed, humidity, Feels like, 
 ---
 Course work from ITWS-2110 Fall 2025

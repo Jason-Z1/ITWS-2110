@@ -1,0 +1,156 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Dec 01, 2025 at 07:35 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `websyslab8`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `courses`
+--
+
+CREATE TABLE `courses` (
+  `crn` int(11) NOT NULL,
+  `prefix` varchar(4) NOT NULL,
+  `number` smallint(4) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `section` varchar(10) DEFAULT NULL,
+  `year_offered` int(4) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `courses`
+--
+
+INSERT INTO `courses` (`crn`, `prefix`, `number`, `title`, `section`, `year_offered`) VALUES
+(73048, 'ITWS', 2110, 'Web Systems Development', '01', 2025),
+(73215, 'CSCI', 2200, 'Foundations of Computer Science', '02', 2025),
+(74046, 'ECON', 2010, 'Intermediate Microeconomic Theory', '03', 2025),
+(75422, 'CSCI', 2800, 'Computer Architecture & Os', '06', 2025);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `grades`
+--
+
+CREATE TABLE `grades` (
+  `id` int(11) NOT NULL,
+  `crn` int(11) NOT NULL,
+  `rin` int(9) NOT NULL,
+  `grade` int(3) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `grades`
+--
+
+INSERT INTO `grades` (`id`, `crn`, `rin`, `grade`) VALUES
+(1, 73048, 12345, 99),
+(2, 73048, 23456, 95),
+(3, 73048, 34567, 100),
+(4, 73048, 45678, 99),
+(5, 73048, 56789, 99),
+(6, 75422, 12345, 94),
+(7, 75422, 23456, 88),
+(8, 75422, 34567, 93),
+(9, 73215, 12345, 80),
+(10, 73215, 23456, 82);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `students`
+--
+
+CREATE TABLE `students` (
+  `rin` int(9) NOT NULL,
+  `rcsID` char(7) DEFAULT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `alias` varchar(100) NOT NULL,
+  `phone` int(10) DEFAULT NULL,
+  `street` varchar(255) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` char(2) DEFAULT NULL,
+  `zip` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `students`
+--
+
+INSERT INTO `students` (`rin`, `rcsID`, `first_name`, `last_name`, `alias`, `phone`, `street`, `city`, `state`, `zip`) VALUES
+(12345, 'zheng12', 'Jason', 'Zheng', 'Jason', 2147483647, 'Pinewoods Ave', 'Troy', 'NY', '12180'),
+(23456, 'kannak', 'Kaaviya', 'Kannan', 'Kaaviya', 2147483647, 'George Ave', 'Edison', 'NJ', '08820'),
+(34567, 'semidp', 'Pablo', 'Semidey', 'Pablo the Goat', 2147483647, 'Burdett Ave', 'Troy', 'NY', '12180'),
+(45678, 'gutiee2', 'Eric', 'Gutierrez', 'Eric', 2013963411, 'Tibbits Ave', 'Troy', 'NY', '12180'),
+(56789, 'oladet', 'Temitayo', 'Oladeji', 'Tem', 2147483647, 'Random St', 'Merrick', 'NY', '12345');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `courses`
+--
+ALTER TABLE `courses`
+  ADD PRIMARY KEY (`crn`);
+
+--
+-- Indexes for table `grades`
+--
+ALTER TABLE `grades`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_grades_courses` (`crn`),
+  ADD KEY `fk_grades_students` (`rin`);
+
+--
+-- Indexes for table `students`
+--
+ALTER TABLE `students`
+  ADD PRIMARY KEY (`rin`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `grades`
+--
+ALTER TABLE `grades`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `grades`
+--
+ALTER TABLE `grades`
+  ADD CONSTRAINT `fk_grades_courses` FOREIGN KEY (`crn`) REFERENCES `courses` (`crn`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_grades_students` FOREIGN KEY (`rin`) REFERENCES `students` (`rin`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
